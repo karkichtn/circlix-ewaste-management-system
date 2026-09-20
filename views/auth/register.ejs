@@ -1,0 +1,66 @@
+<%- include("../partials/header") %>
+
+<div style="max-width: 520px; margin: 2rem auto;">
+  <div class="form-card">
+    <div class="form-header" style="text-align: center;">
+      <div style="width: 44px; height: 44px; margin: 0 auto 0.75rem; background: var(--color-accent-light); color: var(--color-accent); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <line x1="19" y1="8" x2="19" y2="14"></line>
+          <line x1="22" y1="11" x2="16" y2="11"></line>
+        </svg>
+      </div>
+      <h1 style="margin-bottom: 0.2rem;">Circlix Citizen Registration</h1>
+      <p style="font-weight: 600; color: var(--color-primary); margin-bottom: 0.35rem; font-size: 0.95rem;">Closing the Loop on E-Waste</p>
+      <p class="muted">Join the green initiative, recycle e-waste responsibly and earn reward points</p>
+    </div>
+
+    <% if (error) { %>
+      <div class="error">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <form action="/register" method="POST">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Enter your full name" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="name@example.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label>
+          <span>Password</span>
+          <span class="hint">Minimum 6 characters</span>
+        </label>
+        <input type="password" name="password" minlength="6" placeholder="Create a secure password" required autocomplete="new-password">
+      </div>
+
+      <div class="form-group">
+        <label>
+          <span>Default Pickup Address</span>
+          <span class="hint">Optional for quick pickup fill</span>
+        </label>
+        <textarea name="address" placeholder="Enter your home or office address"></textarea>
+      </div>
+
+      <button class="btn" type="submit" style="width: 100%; margin-top: 0.5rem;">
+        <span>Create Citizen Account</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </form>
+
+    <div style="margin-top: 1.5rem; text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.88rem;">
+      <span class="muted">Already registered?</span>
+      <a href="/login" style="color: var(--color-primary); font-weight: 600; margin-left: 0.25rem;">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>

@@ -1,0 +1,118 @@
+<%- include("../partials/header") %>
+
+<div class="page-header">
+  <div class="page-header-text">
+    <h1>Circlix Citizen Dashboard</h1>
+    <p class="muted">Closing the Loop on E-Waste — Manage your pickup requests, track recycling progress, and view reward earnings.</p>
+  </div>
+  <div>
+    <a class="btn" href="/citizen/pickups/new">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>Create Pickup Request</span>
+    </a>
+  </div>
+</div>
+
+<div class="card-grid">
+  <div class="card stat-card">
+    <div class="stat-content">
+      <div class="muted">Reward Wallet Balance</div>
+      <div class="stat"><%= walletPoints %> <span style="font-size: 1.1rem; font-weight: 600; color: var(--color-accent);">pts</span></div>
+      <div class="stat-sub">
+        <a href="/citizen/wallet" style="color: var(--color-primary); font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">
+          <span>Redeem Rewards</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="stat-icon green">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="m7 6 5 5"/></svg>
+    </div>
+  </div>
+
+  <div class="card stat-card">
+    <div class="stat-content">
+      <div class="muted">Total Pickup Requests</div>
+      <div class="stat"><%= requests.length %></div>
+      <div class="stat-sub">Disposal requests submitted</div>
+    </div>
+    <div class="stat-icon blue">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+  <span>My Pickup Requests</span>
+</h2>
+
+<div class="table-card">
+  <% if (requests.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+      </div>
+      <h3>No Pickup Requests Yet</h3>
+      <p>Schedule your first e-waste collection to safely dispose of old electronics and earn eco points.</p>
+      <a class="btn" href="/citizen/pickups/new">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Create First Pickup Request</span>
+      </a>
+    </div>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Quantity</th>
+          <th>Weight</th>
+          <th>Area</th>
+          <th>Preferred Date</th>
+          <th>Status</th>
+          <th>Collection Agent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% requests.forEach(request => { %>
+          <tr>
+            <td>
+              <span class="badge badge-category">
+                <%= request.category.name %>
+              </span>
+            </td>
+            <td>
+              <strong><%= request.quantity %></strong>
+            </td>
+            <td>
+              <%= request.approximateWeight %> kg
+            </td>
+            <td>
+              <%= request.area || "Not specified" %>
+            </td>
+            <td>
+              <%= request.preferredDate.toLocaleDateString() %>
+            </td>
+            <td>
+              <span class="status status-<%= request.status.toLowerCase() %>">
+                <%= request.status %>
+              </span>
+            </td>
+            <td>
+              <% if (request.assignedAgent) { %>
+                <div class="table-user-cell">
+                  <strong><%= request.assignedAgent.name %></strong>
+                  <span class="sub">Assigned</span>
+                </div>
+              <% } else { %>
+                <span class="muted">Pending assignment</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include("../partials/footer") %>

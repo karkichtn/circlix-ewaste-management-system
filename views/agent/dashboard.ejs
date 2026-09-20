@@ -1,0 +1,134 @@
+<%- include("../partials/header") %>
+
+<div class="page-header">
+  <div class="page-header-text">
+    <h1>Circlix Agent Console</h1>
+    <p class="muted">Closing the Loop on E-Waste — Manage and update assigned doorstep e-waste pickups through the recycling lifecycle pipeline.</p>
+  </div>
+  <div>
+    <span class="badge" style="background: #e0e7ff; color: #3730a3; padding: 0.5rem 0.9rem; font-size: 0.85rem;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span><%= pickups.length %> Assigned Pickups</span>
+    </span>
+  </div>
+</div>
+
+<div class="workflow-pipeline">
+  <div class="pipeline-step">
+    <div class="pipeline-step-num">1</div>
+    <div>
+      <div class="pipeline-step-text">Requested</div>
+      <div class="pipeline-step-sub">By Citizen</div>
+    </div>
+  </div>
+  <div class="pipeline-arrow">➔</div>
+  <div class="pipeline-step active">
+    <div class="pipeline-step-num">2</div>
+    <div>
+      <div class="pipeline-step-text">Scheduled</div>
+      <div class="pipeline-step-sub">Assigned to Agent</div>
+    </div>
+  </div>
+  <div class="pipeline-arrow">➔</div>
+  <div class="pipeline-step active">
+    <div class="pipeline-step-num">3</div>
+    <div>
+      <div class="pipeline-step-text">Collected</div>
+      <div class="pipeline-step-sub">Item Picked Up</div>
+    </div>
+  </div>
+  <div class="pipeline-arrow">➔</div>
+  <div class="pipeline-step active">
+    <div class="pipeline-step-num">4</div>
+    <div>
+      <div class="pipeline-step-text">Recycled</div>
+      <div class="pipeline-step-sub">Points Credited</div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+  <span>Assigned Collection Pickups</span>
+</h2>
+
+<div class="table-card">
+  <% if (pickups.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+      </div>
+      <h3>No Assigned Pickups</h3>
+      <p>There are currently no pickups assigned to your account. Check back after new pickups are approved and allocated by the admin.</p>
+    </div>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Citizen Details</th>
+          <th>Category</th>
+          <th>Weight</th>
+          <th>Pickup Address</th>
+          <th>Preferred Date</th>
+          <th>Current Status</th>
+          <th>Operation Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% pickups.forEach(pickup => { %>
+          <tr>
+            <td>
+              <div class="table-user-cell">
+                <strong><%= pickup.citizen.name %></strong>
+                <span class="sub"><%= pickup.citizen.email %></span>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-category"><%= pickup.category.name %></span>
+            </td>
+            <td>
+              <strong><%= pickup.approximateWeight %> kg</strong>
+            </td>
+            <td>
+              <%= pickup.address %>
+            </td>
+            <td>
+              <%= pickup.preferredDate.toLocaleDateString() %>
+            </td>
+            <td>
+              <span class="status status-<%= pickup.status.toLowerCase() %>">
+                <%= pickup.status %>
+              </span>
+            </td>
+            <td>
+              <% if (pickup.status === "Scheduled") { %>
+                <form action="/agent/pickups/<%= pickup._id %>/status" method="POST" style="margin: 0;">
+                  <input type="hidden" name="status" value="Collected">
+                  <button class="btn small" type="submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Mark Collected</span>
+                  </button>
+                </form>
+              <% } else if (pickup.status === "Collected") { %>
+                <form action="/agent/pickups/<%= pickup._id %>/status" method="POST" style="margin: 0;">
+                  <input type="hidden" name="status" value="Recycled">
+                  <button class="btn small" type="submit" style="background: #15803d;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/></svg>
+                    <span>Mark Recycled</span>
+                  </button>
+                </form>
+              <% } else { %>
+                <span class="badge" style="background: #dcfce7; color: #166534;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Completed</span>
+                </span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include("../partials/footer") %>

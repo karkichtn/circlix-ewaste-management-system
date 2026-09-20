@@ -1,0 +1,265 @@
+<%- include("../partials/header") %>
+
+<div class="page-header">
+  <div class="page-header-text">
+    <h1>Circlix Operations & Analytics</h1>
+    <p class="muted">Closing the Loop on E-Waste — Real-time overview of e-waste collection requests, approvals, agent dispatching, and recycled tonnage.</p>
+  </div>
+  <div style="display: flex; gap: 0.5rem;">
+    <a class="btn secondary small" href="/admin/centres">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Centres</span>
+    </a>
+    <a class="btn secondary small" href="/admin/categories">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      <span>Categories</span>
+    </a>
+  </div>
+</div>
+
+<div class="card-grid">
+  <div class="card stat-card">
+    <div class="stat-content">
+      <div class="muted">Total System Requests</div>
+      <div class="stat"><%= totalRequests %></div>
+      <div class="stat-sub">Lifetime citizen requests logged</div>
+    </div>
+    <div class="stat-icon blue">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/></svg>
+    </div>
+  </div>
+
+  <div class="card stat-card">
+    <div class="stat-content">
+      <div class="muted">Total Weight Recycled</div>
+      <div class="stat"><%= totalWeight %> <span style="font-size: 1.1rem; font-weight: 600; color: #15803d;">kg</span></div>
+      <div class="stat-sub">Safely diverted from landfills</div>
+    </div>
+    <div class="stat-icon green">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/></svg>
+    </div>
+  </div>
+
+  <div class="card stat-card">
+    <div class="stat-content">
+      <div class="muted">Awaiting Approval</div>
+      <div class="stat" style="color: #b45309;"><%= pending.length %></div>
+      <div class="stat-sub">Needs verification & scheduling</div>
+    </div>
+    <div class="stat-icon amber">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+  </div>
+
+  <div class="card stat-card">
+    <div class="stat-content">
+      <div class="muted">Unassigned Pickups</div>
+      <div class="stat" style="color: #6d28d9;"><%= scheduled.length %></div>
+      <div class="stat-sub">Waiting for agent dispatch</div>
+    </div>
+    <div class="stat-icon purple">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- Section 1: Pending Approvals -->
+<h2 class="section-title">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <span>Requested — Awaiting Verification & Schedule (<%= pending.length %>)</span>
+</h2>
+
+<div class="table-card">
+  <% if (pending.length === 0) { %>
+    <div class="empty-state" style="padding: 2.5rem 1rem;">
+      <div class="empty-state-icon" style="background: #f0fdf4; color: #166534;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3>All Caught Up!</h3>
+      <p>There are no pending pickup requests awaiting approval.</p>
+    </div>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Citizen</th>
+          <th>Category</th>
+          <th>Weight</th>
+          <th>Area</th>
+          <th>Address</th>
+          <th>Preferred Date</th>
+          <th>Approval Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% pending.forEach(pickup => { %>
+          <tr>
+            <td>
+              <div class="table-user-cell">
+                <strong><%= pickup.citizen.name %></strong>
+                <span class="sub"><%= pickup.citizen.email %></span>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-category"><%= pickup.category.name %></span>
+            </td>
+            <td>
+              <strong><%= pickup.approximateWeight %> kg</strong>
+            </td>
+            <td>
+              <%= pickup.area || "Not specified" %>
+            </td>
+            <td>
+              <%= pickup.address %>
+            </td>
+            <td>
+              <%= pickup.preferredDate.toLocaleDateString() %>
+            </td>
+            <td>
+              <form action="/admin/pickups/<%= pickup._id %>/approve" method="POST" style="margin: 0;">
+                <button class="btn small" type="submit">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Approve & Schedule</span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<!-- Section 2: Scheduled - Assign Agent -->
+<h2 class="section-title">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  <span>Scheduled — Assign Collection Agent (<%= scheduled.length %>)</span>
+</h2>
+
+<div class="table-card">
+  <% if (scheduled.length === 0) { %>
+    <div class="empty-state" style="padding: 2.5rem 1rem;">
+      <div class="empty-state-icon" style="background: #f0fdf4; color: #166534;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3>No Unassigned Pickups</h3>
+      <p>All scheduled pickups currently have collection agents allocated.</p>
+    </div>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Citizen</th>
+          <th>Category</th>
+          <th>Weight</th>
+          <th>Area</th>
+          <th>Pickup Address</th>
+          <th>Assign Agent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% scheduled.forEach(pickup => { %>
+          <tr>
+            <td>
+              <strong><%= pickup.citizen.name %></strong>
+            </td>
+            <td>
+              <span class="badge badge-category"><%= pickup.category.name %></span>
+            </td>
+            <td>
+              <%= pickup.approximateWeight %> kg
+            </td>
+            <td>
+              <%= pickup.area || "Not specified" %>
+            </td>
+            <td>
+              <%= pickup.address %>
+            </td>
+            <td>
+              <form class="inline-form" action="/admin/pickups/<%= pickup._id %>/assign" method="POST" style="margin: 0;">
+                <select name="agentId" required>
+                  <option value="">Select Agent...</option>
+                  <% agents.forEach(agent => { %>
+                    <option value="<%= agent._id %>">
+                      <%= agent.name %>
+                    </option>
+                  <% }) %>
+                </select>
+                <button class="btn small" type="submit">
+                  <span>Assign</span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<!-- Section 3: Breakdowns Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+  <div>
+    <h2 class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      <span>Category-wise Breakdown</span>
+    </h2>
+    <div class="table-card">
+      <% if (categoryBreakdown.length === 0) { %>
+        <p style="padding: 1.5rem; text-align: center;" class="muted">No recycled data yet.</p>
+      <% } else { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Requests</th>
+              <th>Recycled Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% categoryBreakdown.forEach(item => { %>
+              <tr>
+                <td><strong><%= item._id %></strong></td>
+                <td><%= item.requests %></td>
+                <td><span class="badge-pts"><%= item.weight %> kg</span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Area-wise Breakdown</span>
+    </h2>
+    <div class="table-card">
+      <% if (areaBreakdown.length === 0) { %>
+        <p style="padding: 1.5rem; text-align: center;" class="muted">No recycled data yet.</p>
+      <% } else { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Area / Zone</th>
+              <th>Requests</th>
+              <th>Recycled Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% areaBreakdown.forEach(item => { %>
+              <tr>
+                <td><strong><%= item._id || "Not specified" %></strong></td>
+                <td><%= item.requests %></td>
+                <td><span class="badge-pts"><%= item.weight %> kg</span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>
