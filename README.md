@@ -100,6 +100,4 @@ Open:
 7. Reward points are credited to the citizen.
 8. Admin dashboard updates recycled-weight and breakdown statistics.
 
-## Important
 
-Do not upload `.env` to GitHub. Keep credentials in environment variables.
